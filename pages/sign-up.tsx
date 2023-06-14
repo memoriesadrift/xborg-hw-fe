@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { prepareSiweObject } from '../src/utils/siwe';
 
 export default function SignUp() {
+  const [response, setResponse] = useState('')
   const [formData, setFormData] = useState({
       name: '',
       animal: '',
@@ -24,17 +25,25 @@ export default function SignUp() {
   }
 
   const postSignUp = async () => {
-    // Handle SIWE
-    const siweObject = await prepareSiweObject()
+    console.log('starting sign up')
+
+    let siweObject
+    try {
+      siweObject = await prepareSiweObject()
+    } catch (error) {
+      setResponse('Signing Error')
+      return
+    }
 
     if (siweObject == null) {
       return
     }
     
-    const response = await fetch(`${process.env.BE_URL}/sign-up`, {
+    const res = await fetch(`${process.env.BE_URL}/sign-up`, {
       method: 'POST',
       body: JSON.stringify({
-        siweObject
+        ...formData,
+        siwe: siweObject,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -42,6 +51,7 @@ export default function SignUp() {
       credentials: 'include'
     })
 
+    setResponse(await res.text())
   }
 
   return (
@@ -73,6 +83,9 @@ export default function SignUp() {
             Sign Up
           </Button>
         </Stack>
+        <Typography variant="body1" component="p" gutterBottom sx={{mt: 4}}>
+          {response}
+        </Typography>
       </Box>
     </Container>
   );

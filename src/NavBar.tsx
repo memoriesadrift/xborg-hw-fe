@@ -1,9 +1,16 @@
-import { Container, Stack, Toolbar, Typography } from '@mui/material'
+import { Button, Container, Stack, Toolbar, Typography } from '@mui/material'
 import Link from './Link'
 import { signIn } from './utils/siwe'
+import { useEffect, useState } from 'react'
 
 const NavBar = () => {
-  const isLoggedIn = localStorage.getItem('token') != null
+  const [isLoggedIn, setIsLoggedIn] = useState(false) 
+  
+  useEffect(() => {
+    setIsLoggedIn(
+      window.localStorage.getItem('token') != null
+    )
+  }, [])
 
   return (
     <Container>
@@ -27,9 +34,9 @@ const NavBar = () => {
             </Typography>
           ) : (
           <Typography sx={{ mx: 6 }} color="text.secondary">
-            <Link href='#' type='link' color="secondary" underline='hover' onClick={signIn}>
+            <Button variant='text' color="secondary" onClick={signIn}>
               Sign In
-            </Link>
+            </Button>
           </Typography>
           )}
         </Stack>
